@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 const NotificationIcon = () => (
@@ -6,12 +7,10 @@ const NotificationIcon = () => (
   </svg>
 );
 
-const LogoIcon = () => (
-    <svg width="32" height="32" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M18 33C10.8203 33 5.25 27.4297 5.25 20.25C5.25 14.4375 12.375 4.5 18 3C23.625 4.5 30.75 14.4375 30.75 20.25C30.75 27.4297 25.1797 33 18 33Z" className="fill-sky-500"/>
-        <path d="M18 33C16.3359 33 15.1875 27.1875 15.1875 20.25C15.1875 13.3125 16.3359 3 18 3C19.6641 3 20.8125 13.3125 20.8125 20.25C20.8125 27.1875 19.6641 33 18 33Z" className="fill-sky-700"/>
-        <path d="M5.33594 21.375C10.5469 18.0469 25.4531 18.0469 30.6641 21.375C29.4844 28.0781 24.3281 33 18 33C11.6719 33 6.51562 28.0781 5.33594 21.375Z" className="fill-sky-600"/>
-    </svg>
+const HeaderLogo = () => (
+    <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-sky-500 to-blue-600 drop-shadow-sm select-none leading-none pb-1">
+        A
+    </span>
 );
 
 const LogoutIcon = () => (
@@ -30,11 +29,11 @@ const Header: React.FC<HeaderProps> = ({ onLogout, isAdmin }) => {
   return (
     <header className="bg-white border-b border-slate-200 flex-shrink-0 shadow-sm z-20">
       <div className="max-w-5xl mx-auto p-4 flex justify-between items-center">
-        <div className="flex items-center space-x-3">
-            <LogoIcon />
+        <div className="flex items-center space-x-2">
+            <HeaderLogo />
             <div>
-                <h1 className="text-lg font-bold text-gray-800">Aqua Bridge</h1>
-                <p className="text-sm text-gray-500">{isAdmin ? 'Welcome, Admin!' : 'Welcome, Farmer!'}</p>
+                <h1 className="text-lg font-bold text-gray-800 leading-tight">Aqua Bridge</h1>
+                <p className="text-xs text-gray-500">{isAdmin ? 'Welcome, Admin!' : 'Welcome, Farmer!'}</p>
             </div>
         </div>
         <div className="flex items-center space-x-2">

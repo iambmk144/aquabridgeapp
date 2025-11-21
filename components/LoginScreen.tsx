@@ -1,3 +1,4 @@
+
 import React, { useState, FormEvent, ChangeEvent } from 'react';
 
 interface LoginScreenProps {
@@ -5,8 +6,10 @@ interface LoginScreenProps {
 }
 
 const BrandIcon = () => (
-    <div className="mx-auto w-24 h-24 flex items-center justify-center">
-        <img src="/aquabridge.png" alt="Aqua Bridge Logo" className="w-full h-full object-contain" />
+    <div className="mx-auto flex items-center justify-center mb-2">
+        <span className="text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-sky-500 to-blue-600 drop-shadow-sm pb-2" style={{ lineHeight: 1 }}>
+            A
+        </span>
     </div>
 );
 
@@ -70,7 +73,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
       <div className="w-full max-w-md bg-white/80 backdrop-blur-xl p-8 rounded-2xl shadow-xl shadow-sky-100/50 my-auto">
         <div className="text-center mb-10">
            <BrandIcon />
-           <h1 className="text-3xl font-bold text-gray-800 mt-6">Aqua Bridge</h1>
+           <h1 className="text-3xl font-bold text-gray-800 mt-2">Aqua Bridge</h1>
            <p className="text-sky-600 mt-1 font-medium">Empowering Aquaculture Farmers</p>
         </div>
 
