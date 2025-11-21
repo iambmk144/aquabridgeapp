@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect, FormEvent } from 'react';
 import { ChatMessage, MessageAuthor } from '../types';
 import { geminiChat } from '../services/geminiService';
@@ -83,42 +82,44 @@ const Chatbot: React.FC = () => {
     }
     
     return (
-        <div className="h-full flex flex-col">
-            <div className="flex-grow space-y-4 overflow-y-auto p-4">
+        <div className="h-full flex flex-col relative">
+            <div className="flex-grow space-y-4 overflow-y-auto p-4 pb-4">
                 {messages.map((msg, index) => (
                     <ChatBubble key={index} message={msg} />
                 ))}
                 {isLoading && <TypingIndicator />}
                 <div ref={messagesEndRef} />
             </div>
-            <div className="p-4 bg-white border-t border-slate-200">
-                {!isLoading && messages.length <= 2 && (
-                    <div className="flex items-center gap-2 overflow-x-auto pb-3">
-                         <SuggestionChip text="Shrimp disease?" onClick={() => handleSuggestionClick("What are common shrimp diseases?")}/>
-                         <SuggestionChip text="Water quality?" onClick={() => handleSuggestionClick("Best water quality tips for shrimp?")}/>
-                         <SuggestionChip text="Best feed?" onClick={() => handleSuggestionClick("What is the best feed for Vannamei shrimp?")}/>
-                    </div>
-                )}
-                <form onSubmit={handleFormSubmit} className="flex items-center space-x-2">
-                    <input
-                        type="text"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        placeholder="Ask Aqua-Helper..."
-                        className="flex-grow p-3 border border-slate-300 rounded-full focus:outline-none focus:ring-2 focus:ring-sky-500"
-                        disabled={isLoading}
-                    />
-                    <button
-                        type="submit"
-                        className="bg-sky-600 text-white rounded-full p-3 disabled:bg-sky-300 hover:bg-sky-700 transition-colors"
-                        disabled={isLoading || !input.trim()}
-                        aria-label="Send message"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M12 5l7 7-7 7" />
-                        </svg>
-                    </button>
-                </form>
+            <div className="p-4 bg-white border-t border-slate-200 sticky bottom-0">
+                <div className="max-w-5xl mx-auto w-full">
+                    {!isLoading && messages.length <= 2 && (
+                        <div className="flex items-center gap-2 overflow-x-auto pb-3">
+                             <SuggestionChip text="Shrimp disease?" onClick={() => handleSuggestionClick("What are common shrimp diseases?")}/>
+                             <SuggestionChip text="Water quality?" onClick={() => handleSuggestionClick("Best water quality tips for shrimp?")}/>
+                             <SuggestionChip text="Best feed?" onClick={() => handleSuggestionClick("What is the best feed for Vannamei shrimp?")}/>
+                        </div>
+                    )}
+                    <form onSubmit={handleFormSubmit} className="flex items-center space-x-2">
+                        <input
+                            type="text"
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            placeholder="Ask Aqua-Helper..."
+                            className="flex-grow p-3 border border-slate-300 rounded-full focus:outline-none focus:ring-2 focus:ring-sky-500"
+                            disabled={isLoading}
+                        />
+                        <button
+                            type="submit"
+                            className="bg-sky-600 text-white rounded-full p-3 disabled:bg-sky-300 hover:bg-sky-700 transition-colors flex-shrink-0"
+                            disabled={isLoading || !input.trim()}
+                            aria-label="Send message"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M12 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     );

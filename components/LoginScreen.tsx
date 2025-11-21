@@ -66,8 +66,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div className="h-screen w-screen max-w-md mx-auto flex flex-col justify-center items-center bg-gradient-to-br from-sky-50 to-blue-200 p-6">
-      <div className="w-full bg-white/80 backdrop-blur-xl p-8 rounded-2xl shadow-xl shadow-sky-100/50">
+    <div className="min-h-screen w-full flex flex-col justify-center items-center bg-gradient-to-br from-sky-50 to-blue-200 p-4">
+      <div className="w-full max-w-md bg-white/80 backdrop-blur-xl p-8 rounded-2xl shadow-xl shadow-sky-100/50 my-auto">
         <div className="text-center mb-10">
            <BrandIcon />
            <h1 className="text-3xl font-bold text-gray-800 mt-6">Aqua Bridge</h1>

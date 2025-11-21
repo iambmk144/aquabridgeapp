@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import BottomNav from './components/BottomNav';
@@ -8,7 +9,7 @@ import LoginScreen from './components/LoginScreen';
 import SellHarvestScreen from './components/SellHarvestScreen';
 import AdminScreen from './components/AdminScreen';
 import { HarvestRequest, HarvestStatus, ShrimpPrice, ShrimpGrade } from './types';
-import { submitHarvestRequest, getHarvestRequestsForUser, getAllHarvestRequests, updateHarvestRequestStatus, getMarketPrices, updateMarketPrice } from './services/apiService';
+import { submitHarvestRequest, getHarvestRequestsForUser, getAllHarvestRequests, updateHarvestRequestStatus, getMarketPrices, updateMarketPrice, getMarketStatus, updateMarketStatus } from './services/apiService';
 
 export type Tab = 'home' | 'sell' | 'market' | 'support' | 'admin';
 
@@ -23,6 +24,7 @@ const App: React.FC = () => {
   const [harvestRequest, setHarvestRequest] = useState<HarvestRequest | null>(null);
   const [allHarvestRequests, setAllHarvestRequests] = useState<HarvestRequest[]>([]);
   const [marketPrices, setMarketPrices] = useState<ShrimpPrice[]>([]);
+  const [isMarketLive, setIsMarketLive] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
 
   const loadAdminData = async () => {
@@ -36,12 +38,14 @@ const App: React.FC = () => {
       const loadData = async () => {
         setIsLoading(true);
 
-        const [userRequests, prices] = await Promise.all([
+        const [userRequests, prices, marketStatus] = await Promise.all([
           getHarvestRequestsForUser(currentUser),
-          getMarketPrices()
+          getMarketPrices(),
+          getMarketStatus()
         ]);
         
         setMarketPrices(prices);
+        setIsMarketLive(marketStatus);
 
         // Find the most recent, non-completed request for the user
         const activeRequest = userRequests
@@ -72,6 +76,7 @@ const App: React.FC = () => {
     setHarvestRequest(null);
     setAllHarvestRequests([]);
     setMarketPrices([]);
+    setIsMarketLive(true);
     setCurrentUser(null);
     setIsAdmin(false);
   };
@@ -97,6 +102,11 @@ const App: React.FC = () => {
     setMarketPrices(updatedPrices);
   };
   
+  const handleToggleMarketStatus = async (status: boolean) => {
+      await updateMarketStatus(status);
+      setIsMarketLive(status);
+  };
+  
   const handleUpdateRequestStatus = async (requestId: string, newStatus: HarvestStatus) => {
     await updateHarvestRequestStatus(requestId, newStatus);
     // Refresh data for both user and admin after an update
@@ -118,12 +128,12 @@ const App: React.FC = () => {
 
     if (activeTab === 'admin' && !isAdmin) {
         // Fallback in case user tries to access admin tab without privileges
-        return <HomeScreen onSellHarvest={() => setActiveTab('sell')} harvestRequest={harvestRequest} marketPrices={marketPrices} />;
+        return <HomeScreen onSellHarvest={() => setActiveTab('sell')} harvestRequest={harvestRequest} marketPrices={marketPrices} isMarketLive={isMarketLive} />;
     }
 
     switch (activeTab) {
       case 'home':
-        return <HomeScreen onSellHarvest={() => setActiveTab('sell')} harvestRequest={harvestRequest} marketPrices={marketPrices} />;
+        return <HomeScreen onSellHarvest={() => setActiveTab('sell')} harvestRequest={harvestRequest} marketPrices={marketPrices} isMarketLive={isMarketLive} />;
       case 'support':
         return <Chatbot />;
       case 'sell':
@@ -131,9 +141,9 @@ const App: React.FC = () => {
       case 'market':
         return <PlaceholderScreen title="Marketplace" icon={MarketIcon} message="Order quality feed and medicine from trusted suppliers, delivered to your farm." />;
       case 'admin':
-        return <AdminScreen allRequests={allHarvestRequests} onUpdateRequest={handleUpdateRequestStatus} marketPrices={marketPrices} onUpdatePrice={handleUpdatePrice} />;
+        return <AdminScreen allRequests={allHarvestRequests} onUpdateRequest={handleUpdateRequestStatus} marketPrices={marketPrices} onUpdatePrice={handleUpdatePrice} isMarketLive={isMarketLive} onToggleMarketStatus={handleToggleMarketStatus} />;
       default:
-        return <HomeScreen onSellHarvest={() => setActiveTab('sell')} harvestRequest={harvestRequest} marketPrices={marketPrices} />;
+        return <HomeScreen onSellHarvest={() => setActiveTab('sell')} harvestRequest={harvestRequest} marketPrices={marketPrices} isMarketLive={isMarketLive} />;
     }
   };
 
@@ -142,10 +152,12 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="h-screen w-screen max-w-md mx-auto flex flex-col bg-white shadow-2xl overflow-hidden">
+    <div className="h-screen w-full flex flex-col bg-sky-50 overflow-hidden">
       <Header onLogout={handleLogout} isAdmin={isAdmin} />
-      <main className="flex-grow overflow-y-auto pb-20 bg-sky-50 hide-scrollbar">
-        {renderContent()}
+      <main className="flex-grow relative overflow-hidden pb-20">
+        <div className="h-full w-full max-w-5xl mx-auto bg-sky-50 md:bg-transparent relative">
+             {renderContent()}
+        </div>
       </main>
       <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} isAdmin={isAdmin} />
     </div>

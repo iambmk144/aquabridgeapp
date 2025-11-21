@@ -1,8 +1,10 @@
+
 import { MOCK_SHRIMP_PRICES } from '../constants';
 import { HarvestRequest, ShrimpGrade, HarvestStatus, ShrimpPrice } from '../types';
 
 const DB_KEY = 'aqua_bridge_harvest_requests';
 const PRICES_DB_KEY = 'aqua_bridge_market_prices';
+const MARKET_STATUS_DB_KEY = 'aqua_bridge_market_status';
 
 // Helper to get data from localStorage
 const getDb = (): HarvestRequest[] => {
@@ -35,6 +37,23 @@ const savePricesDb = (db: ShrimpPrice[]) => {
 // Simulate API latency
 const withLatency = <T>(data: T): Promise<T> => {
     return new Promise(resolve => setTimeout(() => resolve(data), 500));
+};
+
+/**
+ * Retrieves the current status of the market (live or stopped).
+ */
+export const getMarketStatus = (): Promise<boolean> => {
+    const status = localStorage.getItem(MARKET_STATUS_DB_KEY);
+    // Default to true (live) if not set
+    return withLatency(status !== null ? JSON.parse(status) : true);
+};
+
+/**
+ * Updates the market status.
+ */
+export const updateMarketStatus = (isOpen: boolean): Promise<boolean> => {
+    localStorage.setItem(MARKET_STATUS_DB_KEY, JSON.stringify(isOpen));
+    return withLatency(isOpen);
 };
 
 /**

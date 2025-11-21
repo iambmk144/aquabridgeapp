@@ -6,6 +6,7 @@ interface HomeScreenProps {
     onSellHarvest: () => void;
     harvestRequest: HarvestRequest | null;
     marketPrices: ShrimpPrice[];
+    isMarketLive: boolean;
 }
 
 const PriceCard: React.FC<{ item: ShrimpPrice }> = ({ item }) => {
@@ -24,7 +25,7 @@ const PriceCard: React.FC<{ item: ShrimpPrice }> = ({ item }) => {
   const changeText = isNeutral ? 'Stable' : `₹${Math.abs(change).toFixed(2)}`;
 
   return (
-    <div className="bg-white p-3 rounded-2xl shadow-sm border border-sky-100 flex flex-col items-center justify-center text-center space-y-2 transform transition-all duration-200 hover:scale-105 hover:shadow-md">
+    <div className="bg-white p-3 rounded-2xl shadow-sm border border-sky-100 flex flex-col items-center justify-center text-center space-y-2 transform transition-all duration-200 hover:scale-105 hover:shadow-md h-full">
       <p className="text-xs font-black text-black uppercase tracking-wider">{item.grade}</p>
       <p className="text-xl font-extrabold text-sky-600 tracking-tight">₹{item.price.toFixed(2)}</p>
       <div className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${badgeClasses}`}>
@@ -56,7 +57,7 @@ const SaleStatusCard: React.FC<{ request: HarvestRequest }> = ({ request }) => (
 
 
 const ActionCard: React.FC<{icon: React.ReactNode, title: string, subtitle: string, onClick: () => void, iconBg: string}> = ({ icon, title, subtitle, onClick, iconBg }) => (
-    <button onClick={onClick} className="bg-white p-4 rounded-2xl shadow-sm border border-sky-100 hover:border-sky-300 hover:shadow-md flex items-center space-x-4 text-left w-full transition-all duration-200 group">
+    <button onClick={onClick} className="bg-white p-4 rounded-2xl shadow-sm border border-sky-100 hover:border-sky-300 hover:shadow-md flex items-center space-x-4 text-left w-full transition-all duration-200 group h-full">
         <div className={`p-3 rounded-xl transition-colors ${iconBg} group-hover:scale-105 transform duration-200 shadow-sm`}>{icon}</div>
         <div className="flex-grow">
             <p className="font-bold text-gray-800 text-md group-hover:text-sky-700 transition-colors">{title}</p>
@@ -69,31 +70,50 @@ const ActionCard: React.FC<{icon: React.ReactNode, title: string, subtitle: stri
 );
 
 
-const HomeScreen: React.FC<HomeScreenProps> = ({ onSellHarvest, harvestRequest, marketPrices }) => {
+const HomeScreen: React.FC<HomeScreenProps> = ({ onSellHarvest, harvestRequest, marketPrices, isMarketLive }) => {
   return (
-    <div className="p-5 space-y-8">
+    <div className="h-full overflow-y-auto hide-scrollbar p-4 sm:p-5 space-y-6 sm:space-y-8">
       {harvestRequest && (
         <section>
              <h2 className="text-lg font-bold text-gray-800 mb-3 px-1">Sale Status</h2>
-             <SaleStatusCard request={harvestRequest} />
+             <div className="max-w-lg">
+                <SaleStatusCard request={harvestRequest} />
+             </div>
         </section>
       )}
 
       <section>
         <div className="flex justify-between items-baseline mb-3 px-1">
             <h2 className="text-lg font-bold text-gray-800">Live Market Prices</h2>
-            <span className="text-xs text-sky-600 font-semibold bg-sky-100 px-2 py-1 rounded-full">Updated today</span>
+            {isMarketLive && <span className="text-xs text-sky-600 font-semibold bg-sky-100 px-2 py-1 rounded-full">Updated today</span>}
         </div>
-        <div className="grid grid-cols-3 gap-3">
-          {marketPrices.map((item) => (
-            <PriceCard key={item.grade} item={item} />
-          ))}
-        </div>
+        {isMarketLive ? (
+            /* Responsive Grid: 3 cols mobile, 4 cols sm, 5 cols md, 6 cols lg */
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 sm:gap-3">
+            {marketPrices.map((item) => (
+                <PriceCard key={item.grade} item={item} />
+            ))}
+            </div>
+        ) : (
+            <div className="bg-gradient-to-r from-sky-100 to-blue-100 border border-sky-200 rounded-2xl p-8 text-center shadow-inner">
+                 <div className="flex justify-center mb-3">
+                     <div className="relative">
+                        <div className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></div>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-sky-600 relative" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                     </div>
+                 </div>
+                 <h3 className="text-lg font-bold text-sky-800 mb-1 animate-pulse">Prices Updating</h3>
+                 <p className="text-sky-700 text-sm font-medium">We are currently updating market prices. <br/>Please check back shortly.</p>
+            </div>
+        )}
       </section>
       
       <section>
         <h2 className="text-lg font-bold text-gray-800 mb-3 px-1">Quick Actions</h2>
-        <div className="space-y-3">
+        {/* Responsive Grid: 1 col mobile, 2 cols md */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           <ActionCard 
             onClick={onSellHarvest}
             icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>}

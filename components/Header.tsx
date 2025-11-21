@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 const NotificationIcon = () => (
@@ -29,22 +28,24 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ onLogout, isAdmin }) => {
   return (
-    <header className="bg-white p-4 border-b border-slate-200 flex justify-between items-center flex-shrink-0">
-      <div className="flex items-center space-x-3">
-        <LogoIcon />
-        <div>
-            <h1 className="text-lg font-bold text-gray-800">Aqua Bridge</h1>
-            <p className="text-sm text-gray-500">{isAdmin ? 'Welcome, Admin!' : 'Welcome, Farmer!'}</p>
+    <header className="bg-white border-b border-slate-200 flex-shrink-0 shadow-sm z-20">
+      <div className="max-w-5xl mx-auto p-4 flex justify-between items-center">
+        <div className="flex items-center space-x-3">
+            <LogoIcon />
+            <div>
+                <h1 className="text-lg font-bold text-gray-800">Aqua Bridge</h1>
+                <p className="text-sm text-gray-500">{isAdmin ? 'Welcome, Admin!' : 'Welcome, Farmer!'}</p>
+            </div>
         </div>
-      </div>
-      <div className="flex items-center space-x-2">
-        <button className="relative p-2 rounded-full hover:bg-slate-100 transition-colors">
-            <NotificationIcon />
-            <span className="absolute top-1.5 right-1.5 block h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-white"></span>
-        </button>
-        <button onClick={onLogout} className="p-2 rounded-full hover:bg-slate-100 transition-colors" aria-label="Logout">
-            <LogoutIcon />
-        </button>
+        <div className="flex items-center space-x-2">
+            <button className="relative p-2 rounded-full hover:bg-slate-100 transition-colors">
+                <NotificationIcon />
+                <span className="absolute top-1.5 right-1.5 block h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-white"></span>
+            </button>
+            <button onClick={onLogout} className="p-2 rounded-full hover:bg-slate-100 transition-colors" aria-label="Logout">
+                <LogoutIcon />
+            </button>
+        </div>
       </div>
     </header>
   );

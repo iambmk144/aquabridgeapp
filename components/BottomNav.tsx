@@ -1,4 +1,3 @@
-
 import React from 'react';
 import type { Tab } from '../App';
 
@@ -59,14 +58,16 @@ const NavButton: React.FC<NavButtonProps> = ({ icon, label, isActive, onClick })
 
 const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab, isAdmin }) => {
   return (
-    <footer className="fixed bottom-0 left-0 right-0 max-w-md mx-auto h-20 bg-white border-t border-slate-200 flex justify-around items-center shadow-top z-10 pt-1">
-        <NavButton label="Home" icon={<HomeIcon />} isActive={activeTab === 'home'} onClick={() => setActiveTab('home')} />
-        <NavButton label="Sell" icon={<SellIcon />} isActive={activeTab === 'sell'} onClick={() => setActiveTab('sell')} />
-        <NavButton label="Market" icon={<MarketIcon />} isActive={activeTab === 'market'} onClick={() => setActiveTab('market')} />
-        <NavButton label="Support" icon={<SupportIcon />} isActive={activeTab === 'support'} onClick={() => setActiveTab('support')} />
-        {isAdmin && (
-            <NavButton label="Admin" icon={<AdminIcon />} isActive={activeTab === 'admin'} onClick={() => setActiveTab('admin')} />
-        )}
+    <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 h-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-50">
+        <div className="max-w-5xl mx-auto px-4 h-full flex justify-around md:justify-center md:gap-16 items-center">
+            <NavButton label="Home" icon={<HomeIcon />} isActive={activeTab === 'home'} onClick={() => setActiveTab('home')} />
+            <NavButton label="Sell" icon={<SellIcon />} isActive={activeTab === 'sell'} onClick={() => setActiveTab('sell')} />
+            <NavButton label="Market" icon={<MarketIcon />} isActive={activeTab === 'market'} onClick={() => setActiveTab('market')} />
+            <NavButton label="Support" icon={<SupportIcon />} isActive={activeTab === 'support'} onClick={() => setActiveTab('support')} />
+            {isAdmin && (
+                <NavButton label="Admin" icon={<AdminIcon />} isActive={activeTab === 'admin'} onClick={() => setActiveTab('admin')} />
+            )}
+        </div>
     </footer>
   );
 };

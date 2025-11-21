@@ -54,30 +54,32 @@ const RequestCard: React.FC<{ request: HarvestRequest, onUpdate: (id: string, ne
     const action = getNextAction();
 
     return (
-        <div className="bg-white p-4 rounded-lg shadow-sm border border-slate-200 space-y-3">
-            <div className="flex justify-between items-start">
-                <div>
-                    <h3 className="font-bold text-gray-800">{request.grade}</h3>
-                    <p className="text-sm text-gray-500">{request.location}</p>
+        <div className="bg-white p-4 rounded-lg shadow-sm border border-slate-200 space-y-3 h-full flex flex-col justify-between">
+            <div>
+                <div className="flex justify-between items-start mb-2">
+                    <div>
+                        <h3 className="font-bold text-gray-800">{request.grade}</h3>
+                        <p className="text-sm text-gray-500">{request.location}</p>
+                    </div>
+                    <StatusBadge status={request.status} />
                 </div>
-                <StatusBadge status={request.status} />
-            </div>
-            <div className="text-sm text-gray-600 space-y-2 border-t pt-3">
-                <div className="flex justify-between">
-                    <span>Quantity:</span>
-                    <span className="font-medium text-gray-900">{request.quantity} Kg</span>
-                </div>
-                <div className="flex justify-between">
-                    <span>Submitted:</span>
-                    <span className="font-medium text-gray-900">{new Date(request.timestamp).toLocaleString()}</span>
-                </div>
-                 <div className="flex justify-between">
-                    <span>Farmer ID:</span>
-                    <span className="font-medium text-gray-900 font-mono text-xs">{request.farmerId}</span>
+                <div className="text-sm text-gray-600 space-y-2 border-t pt-3">
+                    <div className="flex justify-between">
+                        <span>Quantity:</span>
+                        <span className="font-medium text-gray-900">{request.quantity} Kg</span>
+                    </div>
+                    <div className="flex justify-between">
+                        <span>Submitted:</span>
+                        <span className="font-medium text-gray-900">{new Date(request.timestamp).toLocaleString()}</span>
+                    </div>
+                     <div className="flex justify-between">
+                        <span>Farmer ID:</span>
+                        <span className="font-medium text-gray-900 font-mono text-xs">{request.farmerId}</span>
+                    </div>
                 </div>
             </div>
             {action && (
-                <div className="border-t pt-3">
+                <div className="border-t pt-3 mt-3">
                     <button
                         onClick={() => handleUpdate(action.nextStatus)}
                         disabled={isUpdating}
@@ -111,26 +113,26 @@ const PriceEditorCard: React.FC<{
     };
 
     return (
-        <div className="bg-white p-3 rounded-lg shadow-sm border border-slate-200 flex items-center justify-between space-x-3">
-            <div className="flex-1">
-                <p className="font-semibold text-gray-700">{priceItem.grade}</p>
-                <p className="text-sm text-gray-500">Current: ₹{priceItem.price.toFixed(2)}</p>
+        <div className="bg-white p-3 rounded-lg shadow-sm border border-slate-200 flex flex-col justify-between space-y-2 h-full">
+            <div className="flex flex-col">
+                <p className="font-bold text-gray-800 text-sm">{priceItem.grade}</p>
+                <p className="text-xs text-gray-500">Current: <span className="font-medium text-gray-700">₹{priceItem.price.toFixed(2)}</span></p>
             </div>
-            <div className="flex items-center space-x-2 w-1/2">
+            <div className="flex items-center space-x-1 pt-1">
                 <input
                     type="number"
                     value={newPrice}
                     onChange={(e) => setNewPrice(e.target.value)}
-                    className="w-full p-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"
-                    placeholder="New Price"
+                    className="w-full p-1.5 border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-sky-500 text-sm min-w-0"
+                    placeholder="Price"
                     disabled={isUpdating}
                 />
                 <button
                     onClick={handleUpdate}
                     disabled={isUpdating || !newPrice || parseFloat(newPrice) === priceItem.price}
-                    className="bg-sky-600 text-white px-3 py-2 rounded-md text-sm font-semibold hover:bg-sky-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    className="bg-sky-600 text-white px-2 py-1.5 rounded text-xs font-bold hover:bg-sky-700 disabled:bg-gray-400 disabled:cursor-not-allowed whitespace-nowrap"
                 >
-                    {isUpdating ? '...' : 'Update'}
+                    {isUpdating ? '...' : 'Set'}
                 </button>
             </div>
         </div>
@@ -143,14 +145,56 @@ interface AdminScreenProps {
     onUpdateRequest: (id: string, newStatus: HarvestStatus) => Promise<void>;
     marketPrices: ShrimpPrice[];
     onUpdatePrice: (grade: ShrimpGrade, newPrice: number) => Promise<void>;
+    isMarketLive: boolean;
+    onToggleMarketStatus: (status: boolean) => Promise<void>;
 }
 
-const AdminScreen: React.FC<AdminScreenProps> = ({ allRequests, onUpdateRequest, marketPrices, onUpdatePrice }) => {
+const AdminScreen: React.FC<AdminScreenProps> = ({ allRequests, onUpdateRequest, marketPrices, onUpdatePrice, isMarketLive, onToggleMarketStatus }) => {
+    const [isToggling, setIsToggling] = useState(false);
+
+    const handleToggle = async () => {
+        setIsToggling(true);
+        await onToggleMarketStatus(!isMarketLive);
+        setIsToggling(false);
+    };
+
     return (
-        <div className="p-4 space-y-8">
+        <div className="h-full overflow-y-auto hide-scrollbar p-4 space-y-8">
             <section>
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">Manage Market Prices</h2>
-                <div className="space-y-3">
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 space-y-4 md:space-y-0">
+                    <h2 className="text-2xl font-bold text-gray-800">Manage Market Prices</h2>
+                    <div className="flex items-center bg-white p-2 rounded-lg border border-slate-200 shadow-sm">
+                        <span className={`text-sm font-medium mr-3 ${isMarketLive ? 'text-green-600' : 'text-orange-600'}`}>
+                            {isMarketLive ? '● Market is LIVE' : '● Market is PAUSED'}
+                        </span>
+                        <button 
+                            onClick={handleToggle}
+                            disabled={isToggling}
+                            className={`px-4 py-2 rounded-md text-sm font-semibold text-white transition-colors ${isMarketLive ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'} disabled:opacity-50`}
+                        >
+                            {isToggling ? 'Processing...' : isMarketLive ? 'Stop Live Updates' : 'Resume Live Updates'}
+                        </button>
+                    </div>
+                </div>
+                
+                {!isMarketLive && (
+                    <div className="mb-6 bg-orange-50 border-l-4 border-orange-400 p-4">
+                        <div className="flex">
+                            <div className="flex-shrink-0">
+                                <svg className="h-5 w-5 text-orange-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                            <div className="ml-3">
+                                <p className="text-sm text-orange-700">
+                                    Users are currently seeing a "Prices Updating" message. You can update prices below without them seeing changes in real-time.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
                     {marketPrices.map(priceItem => (
                         <PriceEditorCard key={priceItem.grade} priceItem={priceItem} onUpdate={onUpdatePrice} />
                     ))}
@@ -158,7 +202,7 @@ const AdminScreen: React.FC<AdminScreenProps> = ({ allRequests, onUpdateRequest,
             </section>
             
             <section>
-                <h2 className="text-2xl font-bold text-gray-800">Incoming Harvest Requests</h2>
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">Incoming Harvest Requests</h2>
                 
                 {allRequests.length === 0 ? (
                     <div className="text-center py-10">
@@ -170,7 +214,7 @@ const AdminScreen: React.FC<AdminScreenProps> = ({ allRequests, onUpdateRequest,
                         <p className="mt-1 text-sm text-gray-500">New harvest requests from farmers will appear here.</p>
                     </div>
                 ) : (
-                    <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {allRequests.map(request => (
                             <RequestCard key={request.id} request={request} onUpdate={onUpdateRequest} />
                         ))}
